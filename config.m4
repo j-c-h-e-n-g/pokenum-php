@@ -4,6 +4,9 @@ dnl config.m4 for extension pokenum
 PHP_ARG_WITH(pokenum, for pokenum support,
 [  --with-pokenum             Include pokenum support])
 
+PHP_ARG_ENABLE(pokenum, whether to enable pokenum support,
+[ --enable-pokenum            Enable pokenum support])
+
 if test "$PHP_POKENUM" != "no"; then
 	dnl # --with-pokenum -> check with-path
 	SEARCH_PATH="/usr/local/include/poker-eval /usr/include/poker-eval"

@@ -12,11 +12,9 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author:                                                              |
+  | Author: Steeve Lennmark                                              |
   +----------------------------------------------------------------------+
 */
-
-/* $Id: header 297205 2010-03-30 21:09:07Z johannes $ */
 
 #ifndef PHP_POKENUM_H
 #define PHP_POKENUM_H
@@ -49,16 +47,6 @@ ZEND_BEGIN_MODULE_GLOBALS(pokenum)
 	char *pokenum_err;
 ZEND_END_MODULE_GLOBALS(pokenum)
 
-/* In every utility function you add that needs to use variables 
-   in php_pokenum_globals, call TSRMLS_FETCH(); after declaring other 
-   variables used by that function, or better yet, pass in TSRMLS_CC
-   after the last function argument and declare your utility function
-   with TSRMLS_DC after the last declared argument.  Always refer to
-   the globals in your function as POKENUM_G(variable).  You are 
-   encouraged to rename these macros something shorter, see
-   examples in any other php module directory.
-*/
-
 #ifdef ZTS
 #define POKENUM_G(v) TSRMG(pokenum_globals_id, zend_pokenum_globals *, v)
 #else
@@ -66,13 +54,3 @@ ZEND_END_MODULE_GLOBALS(pokenum)
 #endif
 
 #endif	/* PHP_POKENUM_H */
-
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */

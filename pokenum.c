@@ -25,19 +25,33 @@ zend_module_entry pokenum_module_entry = {
 	pokenum_functions,
 	PHP_MINIT(pokenum),
 	PHP_MSHUTDOWN(pokenum),
-	NULL,
+	PHP_RINIT(pokenum),
 	NULL,
 	PHP_MINFO(pokenum),
 	"0.1", /* Replace with version number for your extension */
 	STANDARD_MODULE_PROPERTIES
 };
 
+PHP_INI_BEGIN()
+PHP_INI_ENTRY("pokenum.iterations", "100000", PHP_INI_ALL, NULL)
+PHP_INI_END()
+
 #ifdef COMPILE_DL_POKENUM
 ZEND_GET_MODULE(pokenum)
 #endif
 
-PHP_MINIT_FUNCTION(pokenum) {
+static void php_pokenum_init_globals(zend_pokenum_globals *pokenum_globals) {
+}
+
+PHP_RINIT_FUNCTION(pokenum) {
 	POKENUM_G(pokenum_err) = NULL;
+	return SUCCESS;
+}
+
+PHP_MINIT_FUNCTION(pokenum) {
+	ZEND_INIT_MODULE_GLOBALS(pokenum, php_pokenum_init_globals, NULL);
+
+	REGISTER_INI_ENTRIES();
 
 	REGISTER_LONG_CONSTANT("POKENUM_TEXAS",     game_holdem,     CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("POKENUM_TEXAS8",    game_holdem8,    CONST_CS | CONST_PERSISTENT);
@@ -54,6 +68,7 @@ PHP_MINIT_FUNCTION(pokenum) {
 }
 
 PHP_MSHUTDOWN_FUNCTION(pokenum) {
+	UNREGISTER_INI_ENTRIES();
 	return SUCCESS;
 }
 
@@ -67,7 +82,7 @@ PHP_FUNCTION(pokenum) {
 	long game;
 	zval *hands = NULL, *board = NULL, *dead = NULL, **value = NULL, **entry;
 
-	int niter = 100000, npockets = 0, nboard = 0, i = 0, card;
+	int niter = INI_INT("pokenum.iterations"), npockets = 0, nboard = 0, i = 0, card;
 	StdDeck_CardMask pockets[ENUM_MAXPLAYERS], card_board, card_dead, card_dead_real;
 	enum_result_t result;
 	enum_gameparams_t *gameParams;

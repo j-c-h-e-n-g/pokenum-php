@@ -34,6 +34,9 @@ extern zend_module_entry pokenum_module_entry;
 #include "TSRM.h"
 #endif
 
+#define PHP_POKENUM_EXTNAME "pokenum"
+#define PHP_POKENUM_VERSION "0.1"
+
 PHP_MINIT_FUNCTION(pokenum);
 PHP_MSHUTDOWN_FUNCTION(pokenum);
 PHP_RINIT_FUNCTION(pokenum);

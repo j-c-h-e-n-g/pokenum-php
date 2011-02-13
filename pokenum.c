@@ -20,15 +20,19 @@ const zend_function_entry pokenum_functions[] = {
 };
 
 zend_module_entry pokenum_module_entry = {
+#if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
-	"pokenum",
+#endif
+	PHP_POKENUM_EXTNAME,
 	pokenum_functions,
 	PHP_MINIT(pokenum),
 	PHP_MSHUTDOWN(pokenum),
 	PHP_RINIT(pokenum),
 	NULL,
-	PHP_MINFO(pokenum),
-	"0.1", /* Replace with version number for your extension */
+	NULL,
+#if ZEND_MODULE_API_NO >= 20010901
+	PHP_POKENUM_VERSION,
+#endif
 	STANDARD_MODULE_PROPERTIES
 };
 

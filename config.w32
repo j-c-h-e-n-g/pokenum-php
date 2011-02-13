@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("pokenum", "for pokenum support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("pokenum", "enable pokenum support", "no");
+
+if (PHP_POKENUM != "no") {
+	EXTENSION("pokenum", "pokenum.c");
+}
+

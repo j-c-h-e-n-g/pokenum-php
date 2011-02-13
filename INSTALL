@@ -1,0 +1,17 @@
+You need poker-eval which can be found here: http://gna.org/projects/pokersource/
+
+You could also use these rpms:
+http://yahoe.se/rpms/poker-eval-138.0-1.x86_64.rpm
+http://yahoe.se/rpms/poker-eval-devel-138.0-1.x86_64.rpm
+
+When installed, this is the process:
+
+$ git clone git@github.com:steevel/pokenum-php.git
+$ cd pokenum-php
+$ phpize
+$ ./configure --enable-pokenum
+$ make
+$ make install
+
+Add extension=pokenum.so to your php.ini or use dl('pokenum.so'); in your script.
+

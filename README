@@ -1,7 +1,7 @@
 This is pokenum from poker-eval built as a php extension.
 It currently lacks a lot of error handling.
 
-Syntax: pokenum(GameType, Hands [, BoardCards [, DeadCards]])
+Syntax: pokenum(int GameType, array Hands [, array BoardCards [, array DeadCards]])
 
 Valid GameTypes (constants):
 POKENUM_TEXAS, POKENUM_TEXAS8, POKENUM_OMAHA, POKENUM_OMAHA8, POKENUM_7STUD,

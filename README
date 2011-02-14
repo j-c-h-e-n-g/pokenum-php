@@ -9,6 +9,9 @@ POKENUM_7STUD8, POKENUM_RAZZ, POKENUM_5DRAW, POKENUM_5DRAW8, POKENUM_5CARD_27
 
 Types ending with 8 is hi/lo games.
 
+We currently have one ini setting, pokenum.iterations.
+Specify it like: ini_set('pokenum.iterations', 100000); (defualt: 100000)
+
 Example usage (AhAc vs KdKc):
 print_r(pokenum(POKENUM_TEXAS, array(array('Ah', 'Ac'), array('Kd', 'Kc'))));"
 Array

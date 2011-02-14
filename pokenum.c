@@ -212,7 +212,7 @@ PHP_FUNCTION(pokenum) {
 
 		for (i=0; i<result.nplayers; i++) {
 			zval *hash;
-			MAKE_STD_ZVAL(hash);
+			ALLOC_INIT_ZVAL(hash);
 			array_init(hash);
 
 			add_assoc_string(hash, "hand", DmaskString(StdDeck, pockets[i]), 1);

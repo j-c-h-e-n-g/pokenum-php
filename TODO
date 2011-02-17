@@ -1,8 +1,1 @@
-Add support for hand strings
-	Today we have to write: array(array('Ac', 'Ad'), array('Kh', 'Ks'))
-	I want something like:
-		1. 'Ac Ad Kh Ks'
-		2. 'Ac Ad - Kh Ks'
-		3. array('Ac Ad', 'Kh Ks')
-
 Add a lot more error handling

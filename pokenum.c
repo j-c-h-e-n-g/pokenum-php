@@ -91,13 +91,13 @@ PHP_MINFO_FUNCTION(pokenum) {
 	php_info_print_table_end();
 }
 
-void convertCardStringToArray(zval **current) {
-	char card[3], *board = estrdup(Z_STRVAL_PP(current));
+void convertCardStringToArray(zval *current) {
+	char card[3], *board = estrdup(Z_STRVAL_P(current));
 	int i = 0, x, letter = 0;
-	size_t len = Z_STRLEN_PP(current);
+	size_t len = Z_STRLEN_P(current);
 
 	memset(card, 0, sizeof(card));
-	convert_to_array(*current);
+	convert_to_array(current);
 
 	/* Each card is exactly two chars, we let the mask check if they are correct. */
 	for (x=0; x<len; x++) {
@@ -109,7 +109,7 @@ void convertCardStringToArray(zval **current) {
 		}
 
 		if (letter == 2) {
-			add_index_string(*current, i++, card, 1);
+			add_index_string(current, i++, card, 1);
 			memset(card, 0, sizeof(card));
 			letter = 0;
 		}
@@ -150,7 +150,7 @@ PHP_FUNCTION(pokenum) {
 		HashPosition pos;
 
 		if (Z_TYPE_P(dead) == IS_STRING) {
-			convertCardStringToArray(&dead);
+			convertCardStringToArray(dead);
 		} else if (Z_TYPE_P(dead) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as dead card(s)");
 			POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
@@ -181,7 +181,7 @@ PHP_FUNCTION(pokenum) {
 		HashPosition pos;
 
 		if (Z_TYPE_P(board) == IS_STRING) {
-			convertCardStringToArray(&board);
+			convertCardStringToArray(board);
 		} else if (Z_TYPE_P(board) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as board card(s)");
 			POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
@@ -232,7 +232,7 @@ PHP_FUNCTION(pokenum) {
 			zval **hand;
 
 			if (Z_TYPE_PP(entry) == IS_STRING) {
-				convertCardStringToArray(entry);
+				convertCardStringToArray(*entry);
 			} else if (Z_TYPE_PP(entry) != IS_ARRAY) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as hand card(s)");
 				POKENUM_G(pokenum_errn) = PN_ERR_TYPE;

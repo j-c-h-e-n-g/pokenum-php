@@ -3,10 +3,9 @@ Compare AhAc to KdKc
 --CREDITS--
 Steeve Lennmark <steevel@handeldsbanken.se>
 --SKIPIF--
-<?php if (!extension_loaded("pokenum") && !dl("pokenum.so")) echo "skip"; ?>
+<?php if (!extension_loaded("pokenum")) echo "skip"; ?>
 --FILE--
 <?php
-dl('pokenum.so');
 $result = pokenum(POKENUM_TEXAS, array(array('Ah', 'Ac'), array('Kd', 'Kc')));
 if (! $result) {
 	echo "Not a valid result\n";

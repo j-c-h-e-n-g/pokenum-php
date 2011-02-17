@@ -22,3 +22,7 @@ config.log
 config.nice
 config.status
 libtool
+.libs/
+*.ini
+modules/
+pokenum.la

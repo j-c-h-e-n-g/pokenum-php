@@ -45,9 +45,11 @@ PHP_MINFO_FUNCTION(pokenum);
 
 PHP_FUNCTION(pokenum);
 PHP_FUNCTION(pokenum_error);
+PHP_FUNCTION(pokenum_errno);
 
 ZEND_BEGIN_MODULE_GLOBALS(pokenum)
 	char *pokenum_err;
+	int pokenum_errn;
 ZEND_END_MODULE_GLOBALS(pokenum)
 
 #ifdef ZTS
@@ -55,5 +57,12 @@ ZEND_END_MODULE_GLOBALS(pokenum)
 #else
 #define POKENUM_G(v) (pokenum_globals.v)
 #endif
+
+#define PN_ERR_TYPE 1
+#define PN_ERR_CARD_UNKNOWN 2
+#define PN_ERR_CARD_DUPLICATE 3
+#define PN_ERR_BOARD_TOO_MANY 4
+#define PN_ERR_BOARD_TOO_FEW 5
+#define PN_ERR_PLAYERS_TOO_MANY 6
 
 #endif	/* PHP_POKENUM_H */

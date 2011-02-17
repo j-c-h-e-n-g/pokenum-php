@@ -6,6 +6,6 @@ Steeve Lennmark <steevel@handeldsbanken.se>
 <?php if (!extension_loaded("pokenum")) echo "skip"; ?>
 --FILE--
 <?php
-var_dump(pokenum(POKENUM_TEXAS, array(array('Ac', 'Ad'), array('Ac', 'Kd'))) === false);
+var_dump(pokenum(PN_TEXAS, array(array('Ac', 'Ad'), array('Ac', 'Kd'))) === false);
 --EXPECT--
 bool(true)

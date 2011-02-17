@@ -6,9 +6,9 @@ Steeve Lennmark <steevel@handeldsbanken.se>
 <?php if (!extension_loaded("pokenum")) echo "skip"; ?>
 --FILE--
 <?php
-var_dump(pokenum(POKENUM_TEXAS, array('Ac Ad', 'Kd Kc')) !== false);
-var_dump(pokenum(POKENUM_TEXAS, array('Ac Ad', 'Kd Kc'), '7d 7h 7s') !== false);
-var_dump(pokenum(POKENUM_TEXAS, array('Ac Ad', 'Kd Kc'), '7d 7h 7s', '7c') !== false);
+var_dump(pokenum(PN_TEXAS, array('Ac Ad', 'Kd Kc')) !== false);
+var_dump(pokenum(PN_TEXAS, array('Ac Ad', 'Kd Kc'), '7d 7h 7s') !== false);
+var_dump(pokenum(PN_TEXAS, array('Ac Ad', 'Kd Kc'), '7d 7h 7s', '7c') !== false);
 --EXPECT--
 bool(true)
 bool(true)

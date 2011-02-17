@@ -16,6 +16,7 @@ ZEND_DECLARE_MODULE_GLOBALS(pokenum)
 const zend_function_entry pokenum_functions[] = {
 	PHP_FE(pokenum, NULL)
 	PHP_FE(pokenum_error, NULL)
+	PHP_FE(pokenum_errno, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -49,6 +50,7 @@ static void php_pokenum_init_globals(zend_pokenum_globals *pokenum_globals) {
 
 PHP_RINIT_FUNCTION(pokenum) {
 	POKENUM_G(pokenum_err) = NULL;
+	POKENUM_G(pokenum_errn) = 0;
 	return SUCCESS;
 }
 
@@ -57,16 +59,23 @@ PHP_MINIT_FUNCTION(pokenum) {
 
 	REGISTER_INI_ENTRIES();
 
-	REGISTER_LONG_CONSTANT("POKENUM_TEXAS",     game_holdem,     CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("POKENUM_TEXAS8",    game_holdem8,    CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("POKENUM_OMAHA",     game_omaha,      CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("POKENUM_OMAHA8",    game_omaha8,     CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("POKENUM_7STUD",     game_7stud,      CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("POKENUM_7STUD8",    game_7stud8,     CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("POKENUM_RAZZ",      game_razz,       CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("POKENUM_5DRAW",     game_5draw,      CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("POKENUM_5DRAW8",    game_5draw8,     CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("POKENUM_5CARD_27",  game_lowball27,  CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_TEXAS",                 game_holdem,              CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_TEXAS8",                game_holdem8,             CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_OMAHA",                 game_omaha,               CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_OMAHA8",                game_omaha8,              CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_7STUD",                 game_7stud,               CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_7STUD8",                game_7stud8,              CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_RAZZ",                  game_razz,                CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_5DRAW",                 game_5draw,               CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_5DRAW8",                game_5draw8,              CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_5DRAW_27",              game_lowball27,           CONST_CS | CONST_PERSISTENT);
+
+	REGISTER_LONG_CONSTANT("PN_ERR_TYPE",              PN_ERR_TYPE,              CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_ERR_CARD_UNKNOWN",      PN_ERR_CARD_UNKNOWN,      CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_ERR_CARD_DUPLICATE",    PN_ERR_CARD_DUPLICATE,    CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_ERR_BOARD_TOO_MANY",    PN_ERR_BOARD_TOO_MANY,    CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_ERR_BOARD_TOO_FEW",     PN_ERR_BOARD_TOO_FEW,     CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_ERR_PLAYERS_TOO_MANY",  PN_ERR_PLAYERS_TOO_MANY,  CONST_CS | CONST_PERSISTENT);
 
 	return SUCCESS;
 }
@@ -118,6 +127,8 @@ PHP_FUNCTION(pokenum) {
 	enum_result_t result;
 	enum_gameparams_t *gameParams;
 
+	POKENUM_G(pokenum_errn) = 0;
+
 	// GameType, Hands, Board, Dead
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz|zz",
 			&game, &hands, &board, &dead) == FAILURE) {
@@ -142,6 +153,7 @@ PHP_FUNCTION(pokenum) {
 			convertCardStringToArray(&dead);
 		} else if (Z_TYPE_P(dead) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as dead card(s)");
+			POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
 			RETURN_FALSE;
 		}
 
@@ -149,11 +161,13 @@ PHP_FUNCTION(pokenum) {
 		while (zend_hash_get_current_data_ex(Z_ARRVAL_P(dead), (void **)&entry, &pos) == SUCCESS) {
 			if (DstringToCard(StdDeck, Z_STRVAL_PP(entry), &card) == 0) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "Unknown card: %s", Z_STRVAL_PP(entry));
+				POKENUM_G(pokenum_errn) = PN_ERR_CARD_UNKNOWN;
 				RETURN_FALSE;
 			}
 			if (StdDeck_CardMask_CARD_IS_SET(card_dead, card)) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "Duplicate card. %s already used",
 						Z_STRVAL_PP(entry));
+				POKENUM_G(pokenum_errn) = PN_ERR_CARD_DUPLICATE;
 				RETURN_FALSE;
 			}
 
@@ -170,6 +184,7 @@ PHP_FUNCTION(pokenum) {
 			convertCardStringToArray(&board);
 		} else if (Z_TYPE_P(board) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as board card(s)");
+			POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
 			RETURN_FALSE;
 		}
 
@@ -178,15 +193,18 @@ PHP_FUNCTION(pokenum) {
 		while (zend_hash_get_current_data_ex(Z_ARRVAL_P(board), (void **)&entry, &pos) == SUCCESS) {
 			if (nboard >= gameParams->maxboard) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "Board contains too many cards");
+				POKENUM_G(pokenum_errn) = PN_ERR_BOARD_TOO_MANY;
 				RETURN_FALSE;
 			}
 			if (DstringToCard(StdDeck, Z_STRVAL_PP(entry), &card) == 0) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "Unknown card: %s", Z_STRVAL_PP(entry));
+				POKENUM_G(pokenum_errn) = PN_ERR_CARD_UNKNOWN;
 				RETURN_FALSE;
 			}
 			if (StdDeck_CardMask_CARD_IS_SET(card_dead, card)) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "Duplicate card. %s already used.",
 						Z_STRVAL_PP(entry));
+				POKENUM_G(pokenum_errn) = PN_ERR_CARD_DUPLICATE;
 				RETURN_FALSE;
 			}
 
@@ -200,6 +218,7 @@ PHP_FUNCTION(pokenum) {
 		if (nboard > 0 && nboard < 3) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You need atleast 3 board cards.",
 					Z_STRVAL_PP(entry));
+			POKENUM_G(pokenum_errn) = PN_ERR_BOARD_TOO_FEW;
 			RETURN_FALSE;
 		}
 	}
@@ -216,6 +235,7 @@ PHP_FUNCTION(pokenum) {
 				convertCardStringToArray(entry);
 			} else if (Z_TYPE_PP(entry) != IS_ARRAY) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as hand card(s)");
+				POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
 				RETURN_FALSE;
 			}
 
@@ -223,6 +243,7 @@ PHP_FUNCTION(pokenum) {
 
 			if (npockets >= ENUM_MAXPLAYERS) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "Too many players in pot");
+				POKENUM_G(pokenum_errn) = PN_ERR_PLAYERS_TOO_MANY;
 				RETURN_FALSE;
 			}
 
@@ -230,11 +251,13 @@ PHP_FUNCTION(pokenum) {
 			while (zend_hash_get_current_data_ex(hand_hash, (void **) &hand, &handpos) == SUCCESS) {
 				if (DstringToCard(StdDeck, Z_STRVAL_PP(hand), &card) == 0) {
 					spprintf(&POKENUM_G(pokenum_err), 0, "Unknown card: %s", Z_STRVAL_PP(hand));
+				POKENUM_G(pokenum_errn) = PN_ERR_CARD_UNKNOWN;
 					RETURN_FALSE;
 				}
 				if (StdDeck_CardMask_CARD_IS_SET(card_dead, card)) {
 					spprintf(&POKENUM_G(pokenum_err), 0, "Duplicate card. %s already used.",
 							Z_STRVAL_PP(hand));
+					POKENUM_G(pokenum_errn) = PN_ERR_CARD_DUPLICATE;
 					RETURN_FALSE;
 				}
 		
@@ -287,22 +310,17 @@ PHP_FUNCTION(pokenum) {
 }
 
 PHP_FUNCTION(pokenum_error) {
-	zend_bool print_error;
-
 	RETVAL_FALSE;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|b", &print_error) == FAILURE) {
-		return;
-	}
-
 	if (POKENUM_G(pokenum_err) && strlen(POKENUM_G(pokenum_err))) {
-		if (print_error) {
-			zend_printf("%s\n", POKENUM_G(pokenum_err));
-		} else {
-			RETVAL_STRING(POKENUM_G(pokenum_err), 1);
-		}
+		RETVAL_STRING(POKENUM_G(pokenum_err), 1);
 
 		efree(POKENUM_G(pokenum_err));
 		POKENUM_G(pokenum_err) = NULL;
 	}
+}
+
+PHP_FUNCTION(pokenum_errno) {
+	RETVAL_LONG(POKENUM_G(pokenum_errn));
+	POKENUM_G(pokenum_errn) = 0;
 }

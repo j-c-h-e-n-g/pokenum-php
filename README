@@ -4,8 +4,8 @@ It currently lacks a lot of error handling.
 Syntax: pokenum(int GameType, array Hands [, array BoardCards [, array DeadCards]])
 
 Valid GameTypes (constants):
-POKENUM_TEXAS, POKENUM_TEXAS8, POKENUM_OMAHA, POKENUM_OMAHA8, POKENUM_7STUD,
-POKENUM_7STUD8, POKENUM_RAZZ, POKENUM_5DRAW, POKENUM_5DRAW8, POKENUM_5CARD_27
+PN_TEXAS   PN_OMAHA   PN_7STUD   PN_5DRAW   PN_5DRAW_27
+PN_TEXAS8  PN_OMAHA8  PN_7STUD8  PN_5DRAW8  PN_RAZZ
 
 Types ending with 8 is hi/lo games.
 

@@ -6,7 +6,7 @@ Steeve Lennmark <steevel@handeldsbanken.se>
 <?php if (!extension_loaded("pokenum")) echo "skip"; ?>
 --FILE--
 <?php
-$result = pokenum(POKENUM_TEXAS, array(array('Ah', 'Ac'), array('Kd', 'Kc')));
+$result = pokenum(PN_TEXAS, array(array('Ah', 'Ac'), array('Kd', 'Kc')));
 if (! $result) {
 	echo "Not a valid result\n";
 } else {

@@ -10,7 +10,6 @@ $result = pokenum(PN_TEXAS, array(array('Ah', 'Ac'), array('Kd', 'Kc')));
 if (! $result) {
 	echo "Not a valid result\n";
 } else {
-	echo "VALID RESULT\n";
 	var_dump($result['players'] === 2);
 	var_dump($result['iterations'] === 100000);
 	var_dump($result['iterations'] === 100000);
@@ -19,7 +18,6 @@ if (! $result) {
 }
 ?>
 --EXPECT--
-VALID RESULT
 bool(true)
 bool(true)
 bool(true)

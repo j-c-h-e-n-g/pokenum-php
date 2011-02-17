@@ -90,7 +90,22 @@ PHP_MINFO_FUNCTION(pokenum) {
 	php_info_print_table_end();
 }
 
-void convertCardStringToArray(zval *current) {
+zval *pokenumCardsToArray(StdDeck_CardMask *cards) {
+	zval *zdelim, *zstr, *zretval;
+
+	MAKE_STD_ZVAL(zdelim);
+	MAKE_STD_ZVAL(zstr);
+	MAKE_STD_ZVAL(zretval);
+	array_init(zretval);
+
+	ZVAL_STRING(zdelim, " ", 1);
+	ZVAL_STRING(zstr, DmaskString(StdDeck, *cards), 1);
+	php_explode(zdelim, zstr, zretval, LONG_MAX);
+
+	return zretval;
+}
+
+void pokenumCardStringToArray(zval *current) {
 	char card[3], *board = estrdup(Z_STRVAL_P(current));
 	int i = 0, x, letter = 0;
 	size_t len = Z_STRLEN_P(current);
@@ -149,7 +164,7 @@ PHP_FUNCTION(pokenum) {
 
 	if (dead) { // We have a list of dead cards
 		if (Z_TYPE_P(dead) == IS_STRING) {
-			convertCardStringToArray(dead);
+			pokenumCardStringToArray(dead);
 		} else if (Z_TYPE_P(dead) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as dead card(s)");
 			POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
@@ -179,7 +194,7 @@ PHP_FUNCTION(pokenum) {
 
 	if (board) { // We have a list of board cards
 		if (Z_TYPE_P(board) == IS_STRING) {
-			convertCardStringToArray(board);
+			pokenumCardStringToArray(board);
 		} else if (Z_TYPE_P(board) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as board card(s)");
 			POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
@@ -222,7 +237,7 @@ PHP_FUNCTION(pokenum) {
 		}
 	}
 
-	if (Z_TYPE_P(board) != IS_ARRAY) {
+	if (Z_TYPE_P(hands) != IS_ARRAY) {
 		spprintf(&POKENUM_G(pokenum_err), 0, "You have to pass in hands as an array");
 		POKENUM_G(pokenum_errn) = PN_ERR_HAND_ARRAY;
 	} else {
@@ -234,7 +249,7 @@ PHP_FUNCTION(pokenum) {
 			zval **hand;
 
 			if (Z_TYPE_PP(val) == IS_STRING) {
-				convertCardStringToArray(*val);
+				pokenumCardStringToArray(*val);
 			} else if (Z_TYPE_PP(val) != IS_ARRAY) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as hand card(s)");
 				POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
@@ -283,26 +298,27 @@ PHP_FUNCTION(pokenum) {
 
 		add_assoc_long(return_value, "players", result.nplayers);
 		add_assoc_long(return_value, "iterations", result.nsamples);
+
 		if (board) {
-			add_assoc_string(return_value, "board", DmaskString(StdDeck, card_board), 1);
+			add_assoc_zval(return_value, "board", pokenumCardsToArray(&card_board));
 		}
 
 		if (dead) {
-			add_assoc_string(return_value, "dead", DmaskString(StdDeck, card_dead_real), 1);
+			add_assoc_zval(return_value, "dead", pokenumCardsToArray(&card_dead_real));
 		}
 
 		for (i=0; i<result.nplayers; i++) {
-			zval *hash;
-			MAKE_STD_ZVAL(hash);
-			array_init(hash);
+			zval *hash_hand;
+			MAKE_STD_ZVAL(hash_hand);
+			array_init(hash_hand);
 
-			add_assoc_string(hash, "hand", DmaskString(StdDeck, pockets[i]), 1);
-			add_assoc_long(hash, "win", result.nwinhi[i]);
-			add_assoc_long(hash, "lose", result.nlosehi[i]);
-			add_assoc_long(hash, "tie", result.ntiehi[i]);
-			add_assoc_double(hash, "ev", result.ev[i] / result.nsamples);
+			add_assoc_zval(hash_hand, "hand", pokenumCardsToArray(&pockets[i]));
+			add_assoc_long(hash_hand, "win", result.nwinhi[i]);
+			add_assoc_long(hash_hand, "lose", result.nlosehi[i]);
+			add_assoc_long(hash_hand, "tie", result.ntiehi[i]);
+			add_assoc_double(hash_hand, "ev", result.ev[i] / result.nsamples);
 
-			add_next_index_zval(t_hands, hash);
+			add_next_index_zval(t_hands, hash_hand);
 		}
 
 		add_assoc_zval(return_value, "hands", t_hands);

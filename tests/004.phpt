@@ -1,7 +1,7 @@
 --TEST--
 Check passing of strings as arguments
 --CREDITS--
-Steeve Lennmark <steevel@handeldsbanken.se>
+Steeve Lennmark
 --SKIPIF--
 <?php if (!extension_loaded("pokenum")) echo "skip"; ?>
 --FILE--

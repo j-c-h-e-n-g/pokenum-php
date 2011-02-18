@@ -1,7 +1,7 @@
 --TEST--
 Compare AhAc to KdKc
 --CREDITS--
-Steeve Lennmark <steevel@handeldsbanken.se>
+Steeve Lennmark
 --SKIPIF--
 <?php if (!extension_loaded("pokenum")) echo "skip"; ?>
 --FILE--

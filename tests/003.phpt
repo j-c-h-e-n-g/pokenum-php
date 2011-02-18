@@ -1,7 +1,7 @@
 --TEST--
 Check that AcAd vs AcKd doesn't work
 --CREDITS--
-Steeve Lennmark <steevel@handeldsbanken.se>
+Steeve Lennmark
 --SKIPIF--
 <?php if (!extension_loaded("pokenum")) echo "skip"; ?>
 --FILE--

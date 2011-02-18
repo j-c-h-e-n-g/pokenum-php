@@ -40,5 +40,5 @@ if test "$PHP_POKENUM" != "no"; then
 	PHP_ADD_LIBRARY_WITH_PATH(poker-eval, /usr/lib, POKENUM_SHARED_LIBADD)
 	PHP_SUBST(POKENUM_SHARED_LIBADD)
 
-	PHP_NEW_EXTENSION(pokenum, pokenum.c, $ext_shared)
+	PHP_NEW_EXTENSION(pokenum, src/pokenum.c, $ext_shared)
 fi

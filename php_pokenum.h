@@ -35,7 +35,7 @@ extern zend_module_entry pokenum_module_entry;
 #endif
 
 #define PHP_POKENUM_EXTNAME "pokenum"
-#define PHP_POKENUM_VERSION "0.1"
+#define PHP_POKENUM_VERSION "0.2"
 
 PHP_MINIT_FUNCTION(pokenum);
 PHP_MSHUTDOWN_FUNCTION(pokenum);

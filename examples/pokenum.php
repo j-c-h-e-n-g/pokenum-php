@@ -11,13 +11,36 @@ Ah Kh   63325  63.33     36675  36.67         0   0.00     0.633
 <pocket1> - <pocket2> - ... [ -- <board> ] [ / <dead> ]
 */
 
-list($hands, $board) = explode('--', implode(' ', array_splice($_SERVER['argv'], 1)));
+$types = array(
+	'h' => PN_TEXAS,
+	'h8' => PN_TEXAS8,
+	'o' => PN_TEXAS,
+	'o8' => PN_OMAHA8,
+	'7s' => PN_7STUD,
+	'7s8' => PN_7STUD8,
+	'r' => PN_RAZZ,
+	'5d' => PN_5DRAW,
+	'5d8' => PN_5DRAW8,
+	'l27' => PN_5DRAW_27
+);
+$type = '';
+
+$args = $_SERVER['argv'];
+array_shift($args);
+if ($args[0][0] == '-') {
+	$type = substr(array_shift($args), 1);
+}
+
+if (! isset($types[$type])) {
+	printf("USAGE\n");
+	exit;
+}
+
+list($hands, $board) = explode('--', implode(' ', $args));
 $hands = explode('-', $hands);
 list($board, $dead) = explode('/', $board);
 
-var_dump($hands, $board, $dead);
-
-$result = pokenum(PN_TEXAS, $hands, $board, $dead);
+$result = pokenum($types[$type], $hands, $board, $dead);
 if (false === $result) {
 	printf("POKENUM_ERROR: (%d): %s\n", pokenum_errno(), pokenum_error());
 	exit;

@@ -297,6 +297,7 @@ PHP_FUNCTION(pokenum) {
 		MAKE_STD_ZVAL(t_hands);
 		array_init(t_hands);
 
+		add_assoc_string(return_value, "name", gameParams->name, 1);
 		add_assoc_long(return_value, "players", result.nplayers);
 		add_assoc_long(return_value, "iterations", result.nsamples);
 

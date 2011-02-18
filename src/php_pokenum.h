@@ -44,6 +44,7 @@ PHP_RSHUTDOWN_FUNCTION(pokenum);
 PHP_MINFO_FUNCTION(pokenum);
 
 PHP_FUNCTION(pokenum);
+PHP_FUNCTION(pokenum_param);
 PHP_FUNCTION(pokenum_error);
 PHP_FUNCTION(pokenum_errno);
 
@@ -59,11 +60,12 @@ ZEND_END_MODULE_GLOBALS(pokenum)
 #endif
 
 #define PN_ERR_TYPE 1
-#define PN_ERR_CARD_UNKNOWN 2
-#define PN_ERR_CARD_DUPLICATE 3
-#define PN_ERR_BOARD_TOO_MANY 4
-#define PN_ERR_BOARD_TOO_FEW 5
-#define PN_ERR_PLAYERS_TOO_MANY 6
-#define PN_ERR_HAND_ARRAY 7
+#define PN_ERR_CARD_TYPE 2
+#define PN_ERR_CARD_UNKNOWN 3
+#define PN_ERR_CARD_DUPLICATE 4
+#define PN_ERR_BOARD_TOO_MANY 5
+#define PN_ERR_BOARD_TOO_FEW 6
+#define PN_ERR_PLAYERS_TOO_MANY 7
+#define PN_ERR_HAND_ARRAY 8
 
 #endif	/* PHP_POKENUM_H */

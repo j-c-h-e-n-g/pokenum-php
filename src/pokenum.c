@@ -14,6 +14,7 @@ ZEND_DECLARE_MODULE_GLOBALS(pokenum)
 
 const zend_function_entry pokenum_functions[] = {
 	PHP_FE(pokenum, NULL)
+	PHP_FE(pokenum_param, NULL)
 	PHP_FE(pokenum_error, NULL)
 	PHP_FE(pokenum_errno, NULL)
 	{NULL, NULL, NULL}
@@ -70,6 +71,7 @@ PHP_MINIT_FUNCTION(pokenum) {
 	REGISTER_LONG_CONSTANT("PN_5DRAW_27",              game_lowball27,           CONST_CS | CONST_PERSISTENT);
 
 	REGISTER_LONG_CONSTANT("PN_ERR_TYPE",              PN_ERR_TYPE,              CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_ERR_CARD_TYPE",         PN_ERR_CARD_TYPE,         CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PN_ERR_CARD_UNKNOWN",      PN_ERR_CARD_UNKNOWN,      CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PN_ERR_CARD_DUPLICATE",    PN_ERR_CARD_DUPLICATE,    CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PN_ERR_BOARD_TOO_MANY",    PN_ERR_BOARD_TOO_MANY,    CONST_CS | CONST_PERSISTENT);
@@ -151,7 +153,11 @@ PHP_FUNCTION(pokenum) {
 			&game, &hands, &board, &dead) == FAILURE) {
 		return;
 	}
-	gameParams = enumGameParams(game);
+	if (NULL == (gameParams = enumGameParams(game))) {
+		spprintf(&POKENUM_G(pokenum_err), 0, "You didn't pass a valid game type.");
+		POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
+		RETURN_FALSE;
+	}
 
 	// Reset cards
 	for (i=0; i<ENUM_MAXPLAYERS; i++) {
@@ -163,12 +169,12 @@ PHP_FUNCTION(pokenum) {
 
 	array_init(return_value);
 
-	if (dead) { // We have a list of dead cards
+	if (dead && Z_TYPE_P(dead) != IS_NULL) { // We have a list of dead cards
 		if (Z_TYPE_P(dead) == IS_STRING) {
 			pokenumCardStringToArray(dead);
 		} else if (Z_TYPE_P(dead) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as dead card(s)");
-			POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
+			POKENUM_G(pokenum_errn) = PN_ERR_CARD_TYPE;
 			RETURN_FALSE;
 		}
 
@@ -193,12 +199,12 @@ PHP_FUNCTION(pokenum) {
 		}
 	}
 
-	if (board) { // We have a list of board cards
+	if (board && Z_TYPE_P(board) != IS_NULL) { // We have a list of board cards
 		if (Z_TYPE_P(board) == IS_STRING) {
 			pokenumCardStringToArray(board);
 		} else if (Z_TYPE_P(board) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as board card(s)");
-			POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
+			POKENUM_G(pokenum_errn) = PN_ERR_CARD_TYPE;
 			RETURN_FALSE;
 		}
 
@@ -253,7 +259,7 @@ PHP_FUNCTION(pokenum) {
 				pokenumCardStringToArray(*val);
 			} else if (Z_TYPE_PP(val) != IS_ARRAY) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as hand card(s)");
-				POKENUM_G(pokenum_errn) = PN_ERR_TYPE;
+				POKENUM_G(pokenum_errn) = PN_ERR_CARD_TYPE;
 				RETURN_FALSE;
 			}
 
@@ -327,6 +333,29 @@ PHP_FUNCTION(pokenum) {
 	}
 
 	enumResultFree(&result);
+}
+
+PHP_FUNCTION(pokenum_param) {
+	enum_gameparams_t *gameParams;
+	long game;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &game) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	if (NULL == (gameParams = enumGameParams(game))) {
+		RETURN_NULL();
+	}
+
+	array_init(return_value);
+
+	add_assoc_long(return_value, "game",      game);
+	add_assoc_long(return_value, "minpocket", gameParams->minpocket);
+	add_assoc_long(return_value, "maxpocket", gameParams->maxpocket);
+	add_assoc_long(return_value, "maxboard",  gameParams->maxboard);
+	add_assoc_long(return_value, "haslopot",  gameParams->haslopot);
+	add_assoc_long(return_value, "hashipot",  gameParams->hashipot);
+	add_assoc_string(return_value, "name",    gameParams->name, 1);
 }
 
 PHP_FUNCTION(pokenum_error) {

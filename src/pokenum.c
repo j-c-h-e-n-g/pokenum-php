@@ -121,7 +121,7 @@ void pokenumCardStringToArray(zval *current) {
 		char t = board[x];
 
 		/* T, J, Q, K, A */
-		if ((t >= '2' && t <= '9') || (t >= 'a' && t <= 't') || (t >= 'A' && t <= 'T')) {
+		if ((t >= '2' && t <= '9') || (t >= 'a' && t <= 'x') || (t >= 'A' && t <= 'X')) {
 			card[letter++] = t;
 		}
 
@@ -151,7 +151,9 @@ PHP_FUNCTION(pokenum) {
 	// GameType, Hands, Board, Dead
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz|zz",
 			&game, &hands, &board, &dead) == FAILURE) {
-		return;
+		spprintf(&POKENUM_G(pokenum_err), 0, "Incorrect parameters. Pass a constant as first argument.");
+		POKENUM_G(pokenum_errn) = PN_ERR_ARGS;
+		RETURN_FALSE;
 	}
 	if (NULL == (gameParams = enumGameParams(game))) {
 		spprintf(&POKENUM_G(pokenum_err), 0, "You didn't pass a valid game type.");

@@ -67,5 +67,6 @@ ZEND_END_MODULE_GLOBALS(pokenum)
 #define PN_ERR_BOARD_TOO_FEW 6
 #define PN_ERR_PLAYERS_TOO_MANY 7
 #define PN_ERR_HAND_ARRAY 8
+#define PN_ERR_ARGS 9
 
 #endif	/* PHP_POKENUM_H */

@@ -360,7 +360,6 @@ PHP_FUNCTION(pokenum_param) {
 		enum_gameparams_t *gameParams = enumGameParams(start);
 
 		if (gameParams == NULL) {
-			php_printf("WHAT IN THE HOLY HELL: %d\n", start);
 			RETURN_NULL();
 		}
 

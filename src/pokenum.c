@@ -111,13 +111,16 @@ zval *pokenumCardsToArray(StdDeck_CardMask *cards) {
 	return zretval;
 }
 
-void pokenumCardStringToArray(zval *current) {
+zval *pokenumCardStringToArray(zval *current) {
 	char card[3], *board = estrdup(Z_STRVAL_P(current));
+	zval *copy = NULL;
 	int i = 0, x, letter = 0;
 	size_t len = Z_STRLEN_P(current);
 
 	memset(card, 0, sizeof(card));
-	convert_to_array(current);
+
+	ALLOC_INIT_ZVAL(copy);
+	Z_TYPE_P(copy) = IS_NULL;
 
 	/* Each card is exactly two chars, we let the mask check if they are correct. */
 	for (x=0; x<len; x++) {
@@ -126,16 +129,21 @@ void pokenumCardStringToArray(zval *current) {
 		/* T, J, Q, K, A, X */
 		if ((t >= '2' && t <= '9') || (t >= 'a' && t <= 'x') || (t >= 'A' && t <= 'X')) {
 			card[letter++] = t;
+		} else {
+			continue;
 		}
 
 		if (letter == 2) {
-			add_index_string(current, i++, card, 1);
+			if (i == 0) array_init(copy);
+			add_index_string(copy, i++, card, 1);
 			memset(card, 0, sizeof(card));
 			letter = 0;
 		}
 	}
 
 	efree(board);
+
+	return copy;
 }
 
 PHP_FUNCTION(pokenum) {
@@ -176,76 +184,80 @@ PHP_FUNCTION(pokenum) {
 
 	if (dead && Z_TYPE_P(dead) != IS_NULL) { // We have a list of dead cards
 		if (Z_TYPE_P(dead) == IS_STRING) {
-			pokenumCardStringToArray(dead);
+			dead = pokenumCardStringToArray(dead);
 		} else if (Z_TYPE_P(dead) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as dead card(s)");
 			POKENUM_G(pokenum_errn) = PN_ERR_CARD_TYPE;
 			RETURN_FALSE;
 		}
 
-		hash = Z_ARRVAL_P(dead);
-		zend_hash_internal_pointer_reset_ex(hash, &pos);
-		while (zend_hash_get_current_data_ex(hash, (void **) &val, &pos) == SUCCESS) {
-			if (DstringToCard(StdDeck, Z_STRVAL_PP(val), &card) == 0) {
-				spprintf(&POKENUM_G(pokenum_err), 0, "Unknown card: %s", Z_STRVAL_PP(val));
-				POKENUM_G(pokenum_errn) = PN_ERR_CARD_UNKNOWN;
-				RETURN_FALSE;
-			}
-			if (StdDeck_CardMask_CARD_IS_SET(card_dead, card)) {
-				spprintf(&POKENUM_G(pokenum_err), 0, "Duplicate card. %s already used",
-						Z_STRVAL_PP(val));
-				POKENUM_G(pokenum_errn) = PN_ERR_CARD_DUPLICATE;
-				RETURN_FALSE;
-			}
+		if (Z_TYPE_P(dead) != IS_NULL) {
+			hash = Z_ARRVAL_P(dead);
+			zend_hash_internal_pointer_reset_ex(hash, &pos);
+			while (zend_hash_get_current_data_ex(hash, (void **) &val, &pos) == SUCCESS) {
+				if (DstringToCard(StdDeck, Z_STRVAL_PP(val), &card) == 0) {
+					spprintf(&POKENUM_G(pokenum_err), 0, "Unknown card: %s", Z_STRVAL_PP(val));
+					POKENUM_G(pokenum_errn) = PN_ERR_CARD_UNKNOWN;
+					RETURN_FALSE;
+				}
+				if (StdDeck_CardMask_CARD_IS_SET(card_dead, card)) {
+					spprintf(&POKENUM_G(pokenum_err), 0, "Duplicate card. %s already used",
+							Z_STRVAL_PP(val));
+					POKENUM_G(pokenum_errn) = PN_ERR_CARD_DUPLICATE;
+					RETURN_FALSE;
+				}
 
-			StdDeck_CardMask_SET(card_dead, card);
-			StdDeck_CardMask_SET(card_dead_real, card);
-			zend_hash_move_forward_ex(hash, &pos);
+				StdDeck_CardMask_SET(card_dead, card);
+				StdDeck_CardMask_SET(card_dead_real, card);
+				zend_hash_move_forward_ex(hash, &pos);
+			}
 		}
 	}
 
 	if (board && Z_TYPE_P(board) != IS_NULL) { // We have a list of board cards
 		if (Z_TYPE_P(board) == IS_STRING) {
-			pokenumCardStringToArray(board);
+			board = pokenumCardStringToArray(board);
 		} else if (Z_TYPE_P(board) != IS_ARRAY) {
 			spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as board card(s)");
 			POKENUM_G(pokenum_errn) = PN_ERR_CARD_TYPE;
 			RETURN_FALSE;
 		}
 
-		hash = Z_ARRVAL_P(board);
-		zend_hash_internal_pointer_reset_ex(hash, &pos);
-		i = 0;
-		while (zend_hash_get_current_data_ex(hash, (void **) &val, &pos) == SUCCESS) {
-			if (nboard >= gameParams->maxboard) {
-				spprintf(&POKENUM_G(pokenum_err), 0, "Board contains too many cards");
-				POKENUM_G(pokenum_errn) = PN_ERR_BOARD_TOO_MANY;
-				RETURN_FALSE;
+		if (Z_TYPE_P(board) != IS_NULL) {
+			hash = Z_ARRVAL_P(board);
+			zend_hash_internal_pointer_reset_ex(hash, &pos);
+			i = 0;
+			while (zend_hash_get_current_data_ex(hash, (void **) &val, &pos) == SUCCESS) {
+				if (nboard >= gameParams->maxboard) {
+					spprintf(&POKENUM_G(pokenum_err), 0, "Board contains too many cards");
+					POKENUM_G(pokenum_errn) = PN_ERR_BOARD_TOO_MANY;
+					RETURN_FALSE;
+				}
+				if (DstringToCard(StdDeck, Z_STRVAL_PP(val), &card) == 0) {
+					spprintf(&POKENUM_G(pokenum_err), 0, "Unknown card: %s", Z_STRVAL_PP(val));
+					POKENUM_G(pokenum_errn) = PN_ERR_CARD_UNKNOWN;
+					RETURN_FALSE;
+				}
+				if (StdDeck_CardMask_CARD_IS_SET(card_dead, card)) {
+					spprintf(&POKENUM_G(pokenum_err), 0, "Duplicate card. %s already used.",
+							Z_STRVAL_PP(val));
+					POKENUM_G(pokenum_errn) = PN_ERR_CARD_DUPLICATE;
+					RETURN_FALSE;
+				}
+
+				StdDeck_CardMask_SET(card_board, card);
+				StdDeck_CardMask_SET(card_dead, card);
+				nboard++;
+
+				zend_hash_move_forward_ex(hash, &pos);
 			}
-			if (DstringToCard(StdDeck, Z_STRVAL_PP(val), &card) == 0) {
-				spprintf(&POKENUM_G(pokenum_err), 0, "Unknown card: %s", Z_STRVAL_PP(val));
-				POKENUM_G(pokenum_errn) = PN_ERR_CARD_UNKNOWN;
-				RETURN_FALSE;
-			}
-			if (StdDeck_CardMask_CARD_IS_SET(card_dead, card)) {
-				spprintf(&POKENUM_G(pokenum_err), 0, "Duplicate card. %s already used.",
+
+			if (nboard > 0 && nboard < 3) {
+				spprintf(&POKENUM_G(pokenum_err), 0, "You need atleast 3 board cards.",
 						Z_STRVAL_PP(val));
-				POKENUM_G(pokenum_errn) = PN_ERR_CARD_DUPLICATE;
+				POKENUM_G(pokenum_errn) = PN_ERR_BOARD_TOO_FEW;
 				RETURN_FALSE;
 			}
-
-			StdDeck_CardMask_SET(card_board, card);
-			StdDeck_CardMask_SET(card_dead, card);
-			nboard++;
-
-			zend_hash_move_forward_ex(hash, &pos);
-		}
-
-		if (nboard > 0 && nboard < 3) {
-			spprintf(&POKENUM_G(pokenum_err), 0, "You need atleast 3 board cards.",
-					Z_STRVAL_PP(val));
-			POKENUM_G(pokenum_errn) = PN_ERR_BOARD_TOO_FEW;
-			RETURN_FALSE;
 		}
 	}
 
@@ -261,44 +273,46 @@ PHP_FUNCTION(pokenum) {
 			zval **hand;
 
 			if (Z_TYPE_PP(val) == IS_STRING) {
-				pokenumCardStringToArray(*val);
+				*val = pokenumCardStringToArray(*val);
 			} else if (Z_TYPE_PP(val) != IS_ARRAY) {
 				spprintf(&POKENUM_G(pokenum_err), 0, "You must pass Array or String as hand card(s)");
 				POKENUM_G(pokenum_errn) = PN_ERR_CARD_TYPE;
 				RETURN_FALSE;
 			}
 
-			hand_hash = HASH_OF(*val);
+			if (Z_TYPE_P(*val) != IS_NULL) {
+				hand_hash = HASH_OF(*val);
 
-			if (npockets >= ENUM_MAXPLAYERS) {
-				spprintf(&POKENUM_G(pokenum_err), 0, "Too many players in pot");
-				POKENUM_G(pokenum_errn) = PN_ERR_PLAYERS_TOO_MANY;
-				RETURN_FALSE;
-			}
-
-			zend_hash_internal_pointer_reset_ex(hand_hash, &handpos);
-			while (zend_hash_get_current_data_ex(hand_hash, (void **) &hand, &handpos) == SUCCESS) {
-				if (DstringToCard(StdDeck, Z_STRVAL_PP(hand), &card) == 0) {
-					spprintf(&POKENUM_G(pokenum_err), 0, "Unknown card: %s", Z_STRVAL_PP(hand));
-				POKENUM_G(pokenum_errn) = PN_ERR_CARD_UNKNOWN;
+				if (npockets >= ENUM_MAXPLAYERS) {
+					spprintf(&POKENUM_G(pokenum_err), 0, "Too many players in pot");
+					POKENUM_G(pokenum_errn) = PN_ERR_PLAYERS_TOO_MANY;
 					RETURN_FALSE;
 				}
-				if (StdDeck_CardMask_CARD_IS_SET(card_dead, card)) {
-					spprintf(&POKENUM_G(pokenum_err), 0, "Duplicate card. %s already used.",
-							Z_STRVAL_PP(hand));
-					POKENUM_G(pokenum_errn) = PN_ERR_CARD_DUPLICATE;
-					RETURN_FALSE;
+
+				zend_hash_internal_pointer_reset_ex(hand_hash, &handpos);
+				while (zend_hash_get_current_data_ex(hand_hash, (void **) &hand, &handpos) == SUCCESS) {
+					if (DstringToCard(StdDeck, Z_STRVAL_PP(hand), &card) == 0) {
+						spprintf(&POKENUM_G(pokenum_err), 0, "Unknown card: %s", Z_STRVAL_PP(hand));
+					POKENUM_G(pokenum_errn) = PN_ERR_CARD_UNKNOWN;
+						RETURN_FALSE;
+					}
+					if (StdDeck_CardMask_CARD_IS_SET(card_dead, card)) {
+						spprintf(&POKENUM_G(pokenum_err), 0, "Duplicate card. %s already used.",
+								Z_STRVAL_PP(hand));
+						POKENUM_G(pokenum_errn) = PN_ERR_CARD_DUPLICATE;
+						RETURN_FALSE;
+					}
+			
+					StdDeck_CardMask_SET(pockets[npockets], card);
+					StdDeck_CardMask_SET(card_dead, card);
+
+					zend_hash_move_forward_ex(hand_hash, &handpos);
 				}
-		
-				StdDeck_CardMask_SET(pockets[npockets], card);
-				StdDeck_CardMask_SET(card_dead, card);
 
-				zend_hash_move_forward_ex(hand_hash, &handpos);
+				npockets++;
+
+				zend_hash_move_forward_ex(hash, &pos);
 			}
-
-			npockets++;
-
-			zend_hash_move_forward_ex(hash, &pos);
 		}
 	}
 
@@ -312,11 +326,11 @@ PHP_FUNCTION(pokenum) {
 		add_assoc_long(return_value, "players", result.nplayers);
 		add_assoc_long(return_value, "iterations", result.nsamples);
 
-		if (board) {
+		if (board && Z_TYPE_P(board) != IS_NULL) {
 			add_assoc_zval(return_value, "board", pokenumCardsToArray(&card_board));
 		}
 
-		if (dead) {
+		if (dead && Z_TYPE_P(dead) != IS_NULL) {
 			add_assoc_zval(return_value, "dead", pokenumCardsToArray(&card_dead_real));
 		}
 

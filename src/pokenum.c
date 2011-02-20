@@ -341,7 +341,7 @@ PHP_FUNCTION(pokenum) {
 }
 
 PHP_FUNCTION(pokenum_param) {
-	zval *game;
+	zval *game = NULL;
 	long start = 0, end = game_NUMGAMES - 1, multi = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &game) == FAILURE) {

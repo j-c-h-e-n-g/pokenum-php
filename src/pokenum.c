@@ -365,13 +365,9 @@ PHP_FUNCTION(pokenum_error) {
 
 	if (POKENUM_G(pokenum_err) && strlen(POKENUM_G(pokenum_err))) {
 		RETVAL_STRING(POKENUM_G(pokenum_err), 1);
-
-		efree(POKENUM_G(pokenum_err));
-		POKENUM_G(pokenum_err) = NULL;
 	}
 }
 
 PHP_FUNCTION(pokenum_errno) {
 	RETVAL_LONG(POKENUM_G(pokenum_errn));
-	POKENUM_G(pokenum_errn) = 0;
 }

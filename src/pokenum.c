@@ -338,7 +338,6 @@ PHP_FUNCTION(pokenum) {
 }
 
 PHP_FUNCTION(pokenum_param) {
-	enum_gameparams_t *gameParams;
 	zval *game;
 	long start = 0, end = game_NUMGAMES - 1, multi = 0;
 
@@ -354,25 +353,29 @@ PHP_FUNCTION(pokenum_param) {
 	}
 
 	while (start <= end) {
-		zval *t;
+		zval *ttt = NULL;
+		enum_gameparams_t *gameParams = enumGameParams(start);
 
-		ALLOC_INIT_ZVAL(t);
-		array_init(t);
+		if (gameParams == NULL) {
+			php_printf("WHAT IN THE HOLY HELL: %d\n", start);
+			RETURN_NULL();
+		}
 
-		gameParams = enumGameParams(start);
-		add_assoc_string(t, "name", gameParams->name, 1);
-		add_assoc_long(t, "minpocket", gameParams->minpocket);
-		add_assoc_long(t, "maxpocket", gameParams->maxpocket);
-		add_assoc_long(t, "maxboard",  gameParams->maxboard);
-		add_assoc_long(t, "haslopot",  gameParams->haslopot);
-		add_assoc_long(t, "hashipot",  gameParams->hashipot);
-	
+		MAKE_STD_ZVAL(ttt);
+		array_init(ttt);
+
+		add_assoc_long(ttt, "game", start);
+		add_assoc_string(ttt, "name", gameParams->name, 1);
+		add_assoc_long(ttt, "minpocket", gameParams->minpocket);
+		add_assoc_long(ttt, "maxpocket", gameParams->maxpocket);
+		add_assoc_long(ttt, "maxboard",  gameParams->maxboard);
+		add_assoc_long(ttt, "haslopot",  gameParams->haslopot);
+		add_assoc_long(ttt, "hashipot",  gameParams->hashipot);
 
 		if (multi) {
-			add_next_index_zval(return_value, t);
+			add_index_zval(return_value, start, ttt);
 		} else {
-			*return_value = *t;
-			zval_copy_ctor(return_value);
+			RETURN_ZVAL(ttt, 1, 1);
 		}
 
 		++start;

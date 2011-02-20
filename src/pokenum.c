@@ -65,10 +65,13 @@ PHP_MINIT_FUNCTION(pokenum) {
 	REGISTER_LONG_CONSTANT("PN_OMAHA8",                game_omaha8,              CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PN_7STUD",                 game_7stud,               CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PN_7STUD8",                game_7stud8,              CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_7STUDNSQ",              game_7studnsq,            CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PN_RAZZ",                  game_razz,                CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PN_5DRAW",                 game_5draw,               CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PN_5DRAW8",                game_5draw8,              CONST_CS | CONST_PERSISTENT);
-	REGISTER_LONG_CONSTANT("PN_5DRAW_27",              game_lowball27,           CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_5DRAWNSQ",              game_5drawnsq,            CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_LOWBALL",               game_lowball,             CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PN_LOWBALL27",             game_lowball27,           CONST_CS | CONST_PERSISTENT);
 
 	REGISTER_LONG_CONSTANT("PN_ERR_TYPE",              PN_ERR_TYPE,              CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PN_ERR_CARD_TYPE",         PN_ERR_CARD_TYPE,         CONST_CS | CONST_PERSISTENT);

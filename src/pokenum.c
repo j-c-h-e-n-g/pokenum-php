@@ -120,7 +120,7 @@ void pokenumCardStringToArray(zval *current) {
 	for (x=0; x<len; x++) {
 		char t = board[x];
 
-		/* T, J, Q, K, A */
+		/* T, J, Q, K, A, X */
 		if ((t >= '2' && t <= '9') || (t >= 'a' && t <= 'x') || (t >= 'A' && t <= 'X')) {
 			card[letter++] = t;
 		}
@@ -339,25 +339,44 @@ PHP_FUNCTION(pokenum) {
 
 PHP_FUNCTION(pokenum_param) {
 	enum_gameparams_t *gameParams;
-	long game;
+	zval *game;
+	long start = 0, end = game_NUMGAMES - 1, multi = 0;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &game) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &game) == FAILURE) {
 		RETURN_NULL();
 	}
 
-	if (NULL == (gameParams = enumGameParams(game))) {
-		RETURN_NULL();
+	if (game && Z_TYPE_P(game) != IS_NULL) {
+		start = end = Z_DVAL_P(game);
+	} else {
+		multi = 1;
+		array_init(return_value);
 	}
 
-	array_init(return_value);
+	while (start <= end) {
+		zval *t;
 
-	add_assoc_long(return_value, "game",      game);
-	add_assoc_long(return_value, "minpocket", gameParams->minpocket);
-	add_assoc_long(return_value, "maxpocket", gameParams->maxpocket);
-	add_assoc_long(return_value, "maxboard",  gameParams->maxboard);
-	add_assoc_long(return_value, "haslopot",  gameParams->haslopot);
-	add_assoc_long(return_value, "hashipot",  gameParams->hashipot);
-	add_assoc_string(return_value, "name",    gameParams->name, 1);
+		ALLOC_INIT_ZVAL(t);
+		array_init(t);
+
+		gameParams = enumGameParams(start);
+		add_assoc_string(t, "name", gameParams->name, 1);
+		add_assoc_long(t, "minpocket", gameParams->minpocket);
+		add_assoc_long(t, "maxpocket", gameParams->maxpocket);
+		add_assoc_long(t, "maxboard",  gameParams->maxboard);
+		add_assoc_long(t, "haslopot",  gameParams->haslopot);
+		add_assoc_long(t, "hashipot",  gameParams->hashipot);
+	
+
+		if (multi) {
+			add_next_index_zval(return_value, t);
+		} else {
+			*return_value = *t;
+			zval_copy_ctor(return_value);
+		}
+
+		++start;
+	}
 }
 
 PHP_FUNCTION(pokenum_error) {

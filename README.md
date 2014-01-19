@@ -12,7 +12,7 @@ It currently lacks a lot of error handling.
     pokenum_errno() (returns errno, 0 if no error have occured)
     pokenum_param([int GameType]) (returns information about all/specific game type)
 
-error/errno is reset on every use of `pokenum()`
+`error/errno` is reset on every use of `pokenum()`
 
 
 Valid `GameTypes` (constants):
@@ -28,7 +28,7 @@ Specify it like:
 
     ini_set('pokenum.iterations', 100000); (defualt: 100000)
 
-Example usage (AhAc vs KdKc):
+Example usage (`AhAc` vs `KdKc`):
 
     print_r(pokenum(PN_TEXAS, array('Ah Ac', 'Kd Kc')));"
     

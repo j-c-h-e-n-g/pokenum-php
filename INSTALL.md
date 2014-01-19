@@ -1,5 +1,5 @@
-Dependencies 
-========
+# H1 Dependencies 
+
 You need poker-eval which can be found here: http://gna.org/projects/pokersource/
 
 Installation 

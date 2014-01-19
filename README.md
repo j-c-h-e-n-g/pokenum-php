@@ -1,3 +1,7 @@
+Disclaimer: This is forked from https://github.com/steevel/pokenum-php and I'm just tinkering with it and git/github in general. There's a 5% chance this results in something useful.
+
+....
+
 This is pokenum from poker-eval built as a php extension.
 It currently lacks a lot of error handling.
 

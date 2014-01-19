@@ -2,6 +2,9 @@ Dependencies
 ========
 You need poker-eval which can be found here: http://gna.org/projects/pokersource/
 
+Installation 
+========
+
 When installed, this is the process:
 
 $ git clone https://github.com/j-c-h-e-n-g/pokenum-php.git

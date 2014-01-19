@@ -2,8 +2,8 @@
 
 You need poker-eval which can be found here: http://gna.org/projects/pokersource/
 
-Installation 
-========
+# Installation 
+
 
 When installed, this is the process:
 

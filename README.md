@@ -19,6 +19,7 @@ We currently have one ini setting, pokenum.iterations.
 Specify it like: ini_set('pokenum.iterations', 100000); (defualt: 100000)
 
 Example usage (AhAc vs KdKc):
+
     print_r(pokenum(PN_TEXAS, array('Ah Ac', 'Kd Kc')));"
     Array (
 	[players] => 2

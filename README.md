@@ -8,15 +8,19 @@ Syntax: pokenum_param([int GameType]) (returns information about all/specific ga
 
 error/errno is reset on every use of pokenum()
 
+
 Valid GameTypes (constants):
-PN_TEXAS   PN_OMAHA   PN_7STUD    PN_5DRAW    PN_LOWBALL
-PN_TEXAS8  PN_OMAHA8  PN_7STUD8   PN_5DRAW8   PN_LOWBALL27
-                      PN_7STUDNSQ PN_5DRAWNSQ PN_RAZZ
+
+    PN_TEXAS   PN_OMAHA   PN_7STUD    PN_5DRAW    PN_LOWBALL
+    PN_TEXAS8  PN_OMAHA8  PN_7STUD8   PN_5DRAW8   PN_LOWBALL27
+                          PN_7STUDNSQ PN_5DRAWNSQ PN_RAZZ
 
 Types ending with 8 are hi/lo games.
 
 We currently have one ini setting, pokenum.iterations.
-Specify it like: ini_set('pokenum.iterations', 100000); (defualt: 100000)
+Specify it like: 
+
+    ini_set('pokenum.iterations', 100000); (defualt: 100000)
 
 Example usage (AhAc vs KdKc):
 

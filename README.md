@@ -5,10 +5,11 @@ Disclaimer: This is forked from https://github.com/steevel/pokenum-php and I'm j
 This is pokenum from poker-eval built as a php extension.
 It currently lacks a lot of error handling.
 
-Syntax: pokenum(int GameType, array Hands [, array BoardCards [, array DeadCards]])
-Syntax: pokenum_error() (returns false if no errors, a string otherwise)
-Syntax: pokenum_errno() (returns errno, 0 if no error have occured)
-Syntax: pokenum_param([int GameType]) (returns information about all/specific game type)
+## Syntax 
+pokenum(int GameType, array Hands [, array BoardCards [, array DeadCards]])
+pokenum_error() (returns false if no errors, a string otherwise)
+pokenum_errno() (returns errno, 0 if no error have occured)
+pokenum_param([int GameType]) (returns information about all/specific game type)
 
 error/errno is reset on every use of pokenum()
 

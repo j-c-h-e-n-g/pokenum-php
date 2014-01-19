@@ -14,7 +14,7 @@ When installed, this is the process:
     make
     make install
 
-Add extension=pokenum.so to your php.ini or use dl('pokenum.so'); in your script.
+Add `extension=pokenum.so` to your `php.ini` or use `dl('pokenum.so');` in your script.
 
 If you instead want to compile this into your php binary do this:
 

@@ -6,15 +6,16 @@ This is pokenum from poker-eval built as a php extension.
 It currently lacks a lot of error handling.
 
 ## Syntax 
-pokenum(int GameType, array Hands [, array BoardCards [, array DeadCards]])
-pokenum_error() (returns false if no errors, a string otherwise)
-pokenum_errno() (returns errno, 0 if no error have occured)
-pokenum_param([int GameType]) (returns information about all/specific game type)
 
-error/errno is reset on every use of pokenum()
+    pokenum(int GameType, array Hands [, array BoardCards [, array DeadCards]])
+    pokenum_error() (returns false if no errors, a string otherwise)
+    pokenum_errno() (returns errno, 0 if no error have occured)
+    pokenum_param([int GameType]) (returns information about all/specific game type)
+
+error/errno is reset on every use of `pokenum()`
 
 
-Valid GameTypes (constants):
+Valid `GameTypes` (constants):
 
     PN_TEXAS   PN_OMAHA   PN_7STUD    PN_5DRAW    PN_LOWBALL
     PN_TEXAS8  PN_OMAHA8  PN_7STUD8   PN_5DRAW8   PN_LOWBALL27

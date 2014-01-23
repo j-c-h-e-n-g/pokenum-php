@@ -1,4 +1,3 @@
-
 ## Syntax 
 
     pokenum(int GameType, array Hands [, array BoardCards [, array DeadCards]])
@@ -20,14 +19,14 @@ Types ending with 8 are hi/lo games.
 We currently have one ini setting, pokenum.iterations.
 Specify it like: 
 
-    ini_set('pokenum.iterations', 100000); (defualt: 100000)
+    ini_set('pokenum.iterations', 100000); (default: 100000)
 
 
 ## Example Usage
 
 Example usage (`AhAc` vs `KdKc`):
 
-    print_r(pokenum(PN_TEXAS, array('Ah Ac', 'Kd Kc')));"
+    print_r( pokenum(PN_TEXAS, array('Ah Ac', 'Kd Kc')) );
     
 Sample output:
 

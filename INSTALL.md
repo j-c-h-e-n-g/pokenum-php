@@ -1,6 +1,6 @@
 # Dependencies 
 
-You need poker-eval which can be found here: http://gna.org/projects/pokersource/
+You need poker-eval installed which can be found here: http://gna.org/projects/pokersource/ -- that will install the libraries that `phpize` will run against in order for you to talk PHP to pokenum.
 
 # Installation 
 

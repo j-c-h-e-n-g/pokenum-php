@@ -1,3 +1,7 @@
+## About
+
+This is a forked from steevel/pokenum-php -- it's a pokenum wrapped in PHP! Do pokenum queries in PHP syntax. 
+
 ## Syntax 
 
     pokenum(int GameType, array Hands [, array BoardCards [, array DeadCards]])

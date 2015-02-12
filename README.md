@@ -1,6 +1,9 @@
 ## About
 
-This is a forked from steevel/pokenum-php -- it's a pokenum wrapped in PHP! Do pokenum queries in PHP syntax. 
+This is an unmodified fork of steevel/pokenum-php -- it's a pokenum wrapped in PHP! Do pokenum queries in PHP syntax. I just want this somewhere under my control for these repositories:
+
+* https://github.com/j-c-h-e-n-g/vagrant-pokenum
+* https://github.com/j-c-h-e-n-g/cookbook-pokenum
 
 ## Syntax 
 
